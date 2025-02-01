@@ -1,120 +1,196 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HomeWork
+class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        private class ListTask
+        while (true)
         {
-            private readonly List<string> _listOfStrings;
+            Console.WriteLine("Выберите задачу (1, 2, 3) или введите 'exit' для выхода:");
+            string input = Console.ReadLine();
 
-            public ListTask()
+            if (input.ToLower() == "exit")
             {
-                _listOfStrings = new List<string> { "Первый элемент", "Второй элемент", "Третий элемент" };
+                break;
             }
 
-            public void TaskLoop()
+            if (int.TryParse(input, out int taskNumber))
             {
-                Console.WriteLine("Содержимое списка:");
-                DisplayList();
-
-                Console.WriteLine("Введите новую строку для добавления в список (введите '–exit' для выхода):");
-                while (true)
+                switch (taskNumber)
                 {
-                    string newItem = Console.ReadLine();
-                    if (newItem.Equals("–exit", StringComparison.OrdinalIgnoreCase))
-                    {
+                    case 1:
+                        new Task1().TaskLoop();
                         break;
-                    }
-                    _listOfStrings.Add(newItem);
-                    DisplayList();
-
-                    Console.WriteLine("Введите строку для добавления в середину списка:");
-                    string middleItem = Console.ReadLine();
-                    if (middleItem.Equals("–exit", StringComparison.OrdinalIgnoreCase))
-                    {
+                    case 2:
+                        new Task2().TaskLoop();
                         break;
-                    }
-                    int middleIndex = _listOfStrings.Count / 2;
-                    _listOfStrings.Insert(middleIndex, middleItem);
-                    DisplayList();
+                    case 3:
+                        new Task3().TaskLoop();
+                        break;
+                    default:
+                        Console.WriteLine("Некорректный номер задачи.");
+                        break;
                 }
             }
+            else
+            {
+                Console.WriteLine("Некорректный ввод.");
+            }
+        }
+    }
 
-            private void DisplayList()
+    // Задание 1: Работа со списком строк
+    private class Task1
+    {
+        public void TaskLoop()
+        {
+            List<string> stringList = new List<string> { "Apple", "Banana", "Cherry" };
+
+            while (true)
             {
                 Console.WriteLine("Текущий список:");
-                foreach (var item in _listOfStrings)
+                foreach (var item in stringList)
                 {
                     Console.WriteLine(item);
                 }
+
+                Console.WriteLine("Введите новую строку (или '--exit' для выхода):");
+                string input = Console.ReadLine();
+
+                if (input.ToLower() == "--exit")
+                {
+                    break;
+                }
+
+                stringList.Add(input);
+
+                Console.WriteLine("Введите ещё одну строку для добавления в середину списка:");
+                input = Console.ReadLine();
+                stringList.Insert(stringList.Count / 2, input);
             }
         }
+    }
 
-        private class DictionaryTask
+    // Задание 2: Словарь студентов и их оценок
+    private class Task2
+    {
+        public void TaskLoop()
         {
-            private readonly Dictionary<string, float> _students;
+            Dictionary<string, int> studentGrades = new Dictionary<string, int>();
 
-            public DictionaryTask()
+            while (true)
             {
-                _students = new Dictionary<string, float>();
-            }
+                Console.WriteLine("Введите имя студента (или '--exit' для выхода):");
+                string name = Console.ReadLine();
 
-            public void TaskLoop()
-            {
-                while (true)
+                if (name.ToLower() == "--exit")
                 {
-                    Console.WriteLine("Введите имя студента и его оценку (например, Иван 4). Для выхода введите '–exit'.");
-                    string input = Console.ReadLine();
-                    if (input.Equals("–exit", StringComparison.OrdinalIgnoreCase))
-                    {
-                        break;
-                    }
+                    break;
+                }
 
-                    var parts = input.Split(' ');
-                    if (parts.Length != 2 || !float.TryParse(parts[1], out float grade) || grade < 2 || grade > 5)
-                    {
-                        Console.WriteLine("Некорректный ввод. Убедитесь, что вы ввели имя и оценку от 2 до 5.");
-                        continue;
-                    }
+                Console.WriteLine("Введите оценку студента (от 2 до 5):");
+                if (int.TryParse(Console.ReadLine(), out int grade) && grade >= 2 && grade <= 5)
+                {
+                    studentGrades[name] = grade;
+                }
+                else
+                {
+                    Console.WriteLine("Некорректная оценка. Оценка должна быть от 2 до 5.");
+                }
 
-                    _students[parts[0]] = grade; // Добавляем или обновляем оценку студента
-
-                    Console.WriteLine("Введите имя студента для получения его оценки:");
-                    string studentName = Console.ReadLine();
-                    if (_students.TryGetValue(studentName, out float studentGrade))
-                    {
-                        Console.WriteLine($"Оценка студента {studentName}: {studentGrade}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Студента с именем {studentName} не существует.");
-                    }
+                Console.WriteLine("Введите имя студента для поиска его оценки:");
+                name = Console.ReadLine();
+                if (studentGrades.ContainsKey(name))
+                {
+                    Console.WriteLine($"Оценка студента {name}: {studentGrades[name]}");
+                }
+                else
+                {
+                    Console.WriteLine($"Студент с именем {name} не найден.");
                 }
             }
         }
+    }
 
-        public static void Main(string[] args)
+    // Задание 3: Двусвязный список
+    private class Task3
+    {
+        private class Node
         {
-            Console.WriteLine("Выберите задание (1 - Список, 2 - Словарь):");
-            string choice = Console.ReadLine();
+            public string Data { get; set; }
+            public Node Previous { get; set; }
+            public Node Next { get; set; }
 
-            switch (choice)
+            public Node(string data)
             {
-                case "1":
-                    ListTask listTask = new ListTask();
-                    listTask.TaskLoop();
-                    break;
+                Data = data;
+                Previous = null;
+                Next = null;
+            }
+        }
 
-                case "2":
-                    DictionaryTask dictionaryTask = new DictionaryTask();
-                    dictionaryTask.TaskLoop();
-                    break;
+        private Node head;
+        private Node tail;
 
-                default:
-                    Console.WriteLine("Некорректный выбор. Пожалуйста, выберите 1 или 2.");
-                    break;
+        public void TaskLoop()
+        {
+            Console.WriteLine("Введите от 3 до 6 элементов для двусвязного списка:");
+            for (int i = 0; i < 6; i++)
+            {
+                Console.Write($"Элемент {i + 1}: ");
+                string input = Console.ReadLine();
+                AddNode(input);
+
+                if (i >= 2 && i < 5)
+                {
+                    Console.WriteLine("Продолжить ввод? (y/n)");
+                    if (Console.ReadLine().ToLower() != "y")
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Console.WriteLine("Список в прямом порядке:");
+            PrintListForward();
+
+            Console.WriteLine("Список в обратном порядке:");
+            PrintListBackward();
+        }
+
+        private void AddNode(string data)
+        {
+            Node newNode = new Node(data);
+            if (head == null)
+            {
+                head = tail = newNode;
+            }
+            else
+            {
+                tail.Next = newNode;
+                newNode.Previous = tail;
+                tail = newNode;
+            }
+        }
+
+        private void PrintListForward()
+        {
+            Node current = head;
+            while (current != null)
+            {
+                Console.WriteLine(current.Data);
+                current = current.Next;
+            }
+        }
+
+        private void PrintListBackward()
+        {
+            Node current = tail;
+            while (current != null)
+            {
+                Console.WriteLine(current.Data);
+                current = current.Previous;
             }
         }
     }
